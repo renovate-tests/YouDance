@@ -32,7 +32,7 @@ function App() {
       <header className="App-header">
         <h1 className="App-title">YouDance</h1>
       </header>
-      <Container>
+      <Container maxWidth="lg">
         <Box m={4}>
           <FigureSearch />
         </Box>

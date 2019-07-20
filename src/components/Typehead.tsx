@@ -99,7 +99,7 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       flexGrow: 1,
-      height: 250
+      height: 100
     },
     container: {
       flexGrow: 1,
