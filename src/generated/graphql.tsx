@@ -207,16 +207,44 @@ export type AddDanceMutation = { __typename?: "Mutation" } & {
   createDance: { __typename?: "Dance" } & Pick<Dance, "_id" | "name">;
 };
 
+export type DancesQueryVariables = {};
+
+export type DancesQuery = { __typename?: "Query" } & {
+  dances: { __typename?: "DancePage" } & {
+    data: Array<Maybe<{ __typename?: "Dance" } & Pick<Dance, "_id" | "name">>>;
+  };
+};
+
+export type AddFigureMutationVariables = {
+  name: Scalars["String"];
+  dance: Scalars["ID"];
+};
+
+export type AddFigureMutation = { __typename?: "Mutation" } & {
+  createFigure: { __typename?: "Figure" } & Pick<Figure, "_id">;
+};
+
+export type AddFigureVideoMutationVariables = {
+  youtubeId: Scalars["String"];
+  start: Scalars["Int"];
+  end: Scalars["Int"];
+  figureId: Scalars["ID"];
+};
+
+export type AddFigureVideoMutation = { __typename?: "Mutation" } & {
+  createFigureVideo: { __typename?: "FigureVideo" } & Pick<FigureVideo, "_id">;
+};
+
 export type DancesAndFiguresQueryVariables = {};
 
 export type DancesAndFiguresQuery = { __typename?: "Query" } & {
   dances: { __typename?: "DancePage" } & {
     data: Array<
       Maybe<
-        { __typename?: "Dance" } & Pick<Dance, "name"> & {
+        { __typename?: "Dance" } & Pick<Dance, "_id" | "name"> & {
             figures: { __typename?: "FigurePage" } & {
               data: Array<
-                Maybe<{ __typename?: "Figure" } & Pick<Figure, "name">>
+                Maybe<{ __typename?: "Figure" } & Pick<Figure, "_id" | "name">>
               >;
             };
           }
@@ -284,13 +312,209 @@ export function useAddDanceMutation(
   >(AddDanceDocument, baseOptions);
 }
 export type AddDanceMutationHookResult = ReturnType<typeof useAddDanceMutation>;
+export const DancesDocument = gql`
+  query Dances {
+    dances {
+      data {
+        _id
+        name
+      }
+    }
+  }
+`;
+export type DancesComponentProps = Omit<
+  ReactApollo.QueryProps<DancesQuery, DancesQueryVariables>,
+  "query"
+>;
+
+export const DancesComponent = (props: DancesComponentProps) => (
+  <ReactApollo.Query<DancesQuery, DancesQueryVariables>
+    query={DancesDocument}
+    {...props}
+  />
+);
+
+export type DancesProps<TChildProps = {}> = Partial<
+  ReactApollo.DataProps<DancesQuery, DancesQueryVariables>
+> &
+  TChildProps;
+export function withDances<TProps, TChildProps = {}>(
+  operationOptions?: ReactApollo.OperationOption<
+    TProps,
+    DancesQuery,
+    DancesQueryVariables,
+    DancesProps<TChildProps>
+  >
+) {
+  return ReactApollo.withQuery<
+    TProps,
+    DancesQuery,
+    DancesQueryVariables,
+    DancesProps<TChildProps>
+  >(DancesDocument, {
+    alias: "withDances",
+    ...operationOptions
+  });
+}
+
+export function useDancesQuery(
+  baseOptions?: ReactApolloHooks.QueryHookOptions<DancesQueryVariables>
+) {
+  return ReactApolloHooks.useQuery<DancesQuery, DancesQueryVariables>(
+    DancesDocument,
+    baseOptions
+  );
+}
+export type DancesQueryHookResult = ReturnType<typeof useDancesQuery>;
+export const AddFigureDocument = gql`
+  mutation AddFigure($name: String!, $dance: ID!) {
+    createFigure(data: { name: $name, dance: { connect: $dance } }) {
+      _id
+    }
+  }
+`;
+export type AddFigureMutationFn = ReactApollo.MutationFn<
+  AddFigureMutation,
+  AddFigureMutationVariables
+>;
+export type AddFigureComponentProps = Omit<
+  ReactApollo.MutationProps<AddFigureMutation, AddFigureMutationVariables>,
+  "mutation"
+>;
+
+export const AddFigureComponent = (props: AddFigureComponentProps) => (
+  <ReactApollo.Mutation<AddFigureMutation, AddFigureMutationVariables>
+    mutation={AddFigureDocument}
+    {...props}
+  />
+);
+
+export type AddFigureProps<TChildProps = {}> = Partial<
+  ReactApollo.MutateProps<AddFigureMutation, AddFigureMutationVariables>
+> &
+  TChildProps;
+export function withAddFigure<TProps, TChildProps = {}>(
+  operationOptions?: ReactApollo.OperationOption<
+    TProps,
+    AddFigureMutation,
+    AddFigureMutationVariables,
+    AddFigureProps<TChildProps>
+  >
+) {
+  return ReactApollo.withMutation<
+    TProps,
+    AddFigureMutation,
+    AddFigureMutationVariables,
+    AddFigureProps<TChildProps>
+  >(AddFigureDocument, {
+    alias: "withAddFigure",
+    ...operationOptions
+  });
+}
+
+export function useAddFigureMutation(
+  baseOptions?: ReactApolloHooks.MutationHookOptions<
+    AddFigureMutation,
+    AddFigureMutationVariables
+  >
+) {
+  return ReactApolloHooks.useMutation<
+    AddFigureMutation,
+    AddFigureMutationVariables
+  >(AddFigureDocument, baseOptions);
+}
+export type AddFigureMutationHookResult = ReturnType<
+  typeof useAddFigureMutation
+>;
+export const AddFigureVideoDocument = gql`
+  mutation AddFigureVideo(
+    $youtubeId: String!
+    $start: Int!
+    $end: Int!
+    $figureId: ID!
+  ) {
+    createFigureVideo(
+      data: {
+        youtubeId: $youtubeId
+        start: $start
+        end: $end
+        figure: { connect: $figureId }
+      }
+    ) {
+      _id
+    }
+  }
+`;
+export type AddFigureVideoMutationFn = ReactApollo.MutationFn<
+  AddFigureVideoMutation,
+  AddFigureVideoMutationVariables
+>;
+export type AddFigureVideoComponentProps = Omit<
+  ReactApollo.MutationProps<
+    AddFigureVideoMutation,
+    AddFigureVideoMutationVariables
+  >,
+  "mutation"
+>;
+
+export const AddFigureVideoComponent = (
+  props: AddFigureVideoComponentProps
+) => (
+  <ReactApollo.Mutation<AddFigureVideoMutation, AddFigureVideoMutationVariables>
+    mutation={AddFigureVideoDocument}
+    {...props}
+  />
+);
+
+export type AddFigureVideoProps<TChildProps = {}> = Partial<
+  ReactApollo.MutateProps<
+    AddFigureVideoMutation,
+    AddFigureVideoMutationVariables
+  >
+> &
+  TChildProps;
+export function withAddFigureVideo<TProps, TChildProps = {}>(
+  operationOptions?: ReactApollo.OperationOption<
+    TProps,
+    AddFigureVideoMutation,
+    AddFigureVideoMutationVariables,
+    AddFigureVideoProps<TChildProps>
+  >
+) {
+  return ReactApollo.withMutation<
+    TProps,
+    AddFigureVideoMutation,
+    AddFigureVideoMutationVariables,
+    AddFigureVideoProps<TChildProps>
+  >(AddFigureVideoDocument, {
+    alias: "withAddFigureVideo",
+    ...operationOptions
+  });
+}
+
+export function useAddFigureVideoMutation(
+  baseOptions?: ReactApolloHooks.MutationHookOptions<
+    AddFigureVideoMutation,
+    AddFigureVideoMutationVariables
+  >
+) {
+  return ReactApolloHooks.useMutation<
+    AddFigureVideoMutation,
+    AddFigureVideoMutationVariables
+  >(AddFigureVideoDocument, baseOptions);
+}
+export type AddFigureVideoMutationHookResult = ReturnType<
+  typeof useAddFigureVideoMutation
+>;
 export const DancesAndFiguresDocument = gql`
   query DancesAndFigures {
     dances {
       data {
+        _id
         name
         figures {
           data {
+            _id
             name
           }
         }

@@ -37,25 +37,42 @@ function FigureSearch({ suggestions }: FigureSearchProps) {
   );
 }
 
-function getSuggestions(data: DancesAndFiguresQuery): string[] {
+interface UniqueFigure {
+  label: string;
+  danceId: string;
+  figureId: string;
+}
+
+export function getUniqueFigures(data: DancesAndFiguresQuery): UniqueFigure[] {
   if (!data.dances) {
     return [];
   }
 
-  return (data.dances.data || []).reduce((suggestions: string[], dance) => {
-    if (!dance) {
-      return suggestions;
-    }
+  return (data.dances.data || []).reduce(
+    (suggestions: UniqueFigure[], dance) => {
+      if (!dance) {
+        return suggestions;
+      }
 
-    const danceName = dance.name;
+      const danceName = dance.name;
 
-    return [
-      ...suggestions,
-      ...dance.figures.data
-        .filter(figure => figure !== null)
-        .map(figure => (figure ? `${figure.name} in ${danceName}` : ""))
-    ];
-  }, []);
+      return [
+        ...suggestions,
+        ...dance.figures.data
+          .filter(figure => figure !== null)
+          .map(figure =>
+            figure
+              ? {
+                  label: `${figure.name} in ${danceName}`,
+                  danceId: dance._id,
+                  figureId: figure._id
+                }
+              : { label: "", danceId: "", figureId: "" }
+          )
+      ];
+    },
+    []
+  );
 }
 
 function Main() {
@@ -63,7 +80,11 @@ function Main() {
 
   return (
     <Box m={4}>
-      <FigureSearch suggestions={data ? getSuggestions(data) : []} />
+      <FigureSearch
+        suggestions={
+          data ? getUniqueFigures(data).map(suggestion => suggestion.label) : []
+        }
+      />
     </Box>
   );
 }

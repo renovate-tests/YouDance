@@ -4,3 +4,36 @@ mutation AddDance($name: String!, $ballroom: Boolean!, $latin: Boolean!) {
     name
   }
 }
+
+query Dances {
+  dances {
+    data {
+      _id
+      name
+    }
+  }
+}
+
+mutation AddFigure($name: String!, $dance: ID!) {
+  createFigure(data: { name: $name, dance: { connect: $dance } }) {
+    _id
+  }
+}
+
+mutation AddFigureVideo(
+  $youtubeId: String!
+  $start: Int!
+  $end: Int!
+  $figureId: ID!
+) {
+  createFigureVideo(
+    data: {
+      youtubeId: $youtubeId
+      start: $start
+      end: $end
+      figure: { connect: $figureId }
+    }
+  ) {
+    _id
+  }
+}

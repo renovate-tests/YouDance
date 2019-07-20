@@ -1,9 +1,11 @@
 query DancesAndFigures {
   dances {
     data {
+      _id
       name
       figures {
         data {
+          _id
           name
         }
       }

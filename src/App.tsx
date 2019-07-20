@@ -15,8 +15,8 @@ export default function App() {
         </header>
 
         <Container maxWidth="lg">
-          <Route path="/" exact component={Main} />;
-          <Route path="/admin" exact component={Admin} />;
+          <Route path="/" exact component={Main} />
+          <Route path="/admin" exact component={Admin} />
         </Container>
       </div>
     </Router>
