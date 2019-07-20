@@ -7,5 +7,5 @@ Search YouTube for specific dancing figures easily
 ## Roadmap
 
 - [x] Continious Deployment
-- [ ] Mockup Design
+- [x] Mockup Design
 - [ ] Host the Data in the Cloud (https://www.prisma.io/cloud)
