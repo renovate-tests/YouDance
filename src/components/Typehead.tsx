@@ -7,6 +7,39 @@ import TextField, { TextFieldProps } from "@material-ui/core/TextField";
 import Paper from "@material-ui/core/Paper";
 import MenuItem, { MenuItemProps } from "@material-ui/core/MenuItem";
 
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      flexGrow: 1,
+      height: 100
+    },
+    container: {
+      flexGrow: 1,
+      position: "relative"
+    },
+    paper: {
+      position: "absolute",
+      zIndex: 1,
+      marginTop: theme.spacing(1),
+      left: 0,
+      right: 0
+    },
+    chip: {
+      margin: theme.spacing(0.5, 0.25)
+    },
+    inputRoot: {
+      flexWrap: "wrap"
+    },
+    inputInput: {
+      width: "auto",
+      flexGrow: 1
+    },
+    divider: {
+      height: theme.spacing(2)
+    }
+  })
+);
+
 type RenderInputProps = TextFieldProps & {
   classes: ReturnType<typeof useStyles>;
   ref?: React.Ref<HTMLDivElement>;
@@ -94,39 +127,6 @@ function getSuggestions(
         return keep;
       });
 }
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      flexGrow: 1,
-      height: 100
-    },
-    container: {
-      flexGrow: 1,
-      position: "relative"
-    },
-    paper: {
-      position: "absolute",
-      zIndex: 1,
-      marginTop: theme.spacing(1),
-      left: 0,
-      right: 0
-    },
-    chip: {
-      margin: theme.spacing(0.5, 0.25)
-    },
-    inputRoot: {
-      flexWrap: "wrap"
-    },
-    inputInput: {
-      width: "auto",
-      flexGrow: 1
-    },
-    divider: {
-      height: theme.spacing(2)
-    }
-  })
-);
 
 interface TypeaheadProps {
   suggestions: string[];
