@@ -19,7 +19,7 @@ export default function FigureTypeahead({
     );
 
     if (!uniqueFigure) {
-      throw "Something was selected that can not be in the list";
+      throw new Error("Something was selected that can not be in the list");
     }
 
     setDance(uniqueFigure.danceId);

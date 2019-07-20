@@ -14,14 +14,24 @@ interface FigureVideo {
   end: number; // in seconds
 }
 
+function getUniqueId({ youtubeId, start, end }: FigureVideo): string {
+  return `${youtubeId}:${start}:${end}`;
+}
+
 export function getEmbeddedVideoUrl(video: FigureVideo): string {
   return `https://www.youtube.com/embed/${video.youtubeId}?start=${
     video.start
   }&end=${video.end}&version=3`;
 }
 
-function FigureView(figure: FigureVideo) {
-  return <iframe className="figureView" src={getEmbeddedVideoUrl(figure)} />;
+function FigureView(video: FigureVideo) {
+  return (
+    <iframe
+      title={getUniqueId(video)}
+      className="figureView"
+      src={getEmbeddedVideoUrl(video)}
+    />
+  );
 }
 
 function EmptyListView() {
@@ -50,10 +60,6 @@ export default function VideoPreviews({ figure }: VideoPreviewsProps) {
 
   if (!filteredVideos.length) {
     return <EmptyListView />;
-  }
-
-  function getUniqueId({ youtubeId, start, end }: FigureVideo): string {
-    return `${youtubeId}:${start}:${end}`;
   }
 
   return (
