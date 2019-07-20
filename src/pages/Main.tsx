@@ -17,7 +17,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 interface FigureSearchProps {
-  suggestions: string[];
+  suggestions: UniqueFigure[];
 }
 
 function FigureSearch({ suggestions }: FigureSearchProps) {
@@ -32,12 +32,15 @@ function FigureSearch({ suggestions }: FigureSearchProps) {
         setDance={setDance}
         setFigure={setFigure}
       />
-      <VideoPreviews dance={dance} figure={figure} />
+
+      {dance !== "" && figure !== "" ? (
+        <VideoPreviews dance={dance} figure={figure} />
+      ) : null}
     </Paper>
   );
 }
 
-interface UniqueFigure {
+export interface UniqueFigure {
   label: string;
   danceId: string;
   figureId: string;
@@ -80,11 +83,7 @@ function Main() {
 
   return (
     <Box m={4}>
-      <FigureSearch
-        suggestions={
-          data ? getUniqueFigures(data).map(suggestion => suggestion.label) : []
-        }
-      />
+      <FigureSearch suggestions={data ? getUniqueFigures(data) : []} />
     </Box>
   );
 }

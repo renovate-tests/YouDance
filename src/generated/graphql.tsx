@@ -1,6 +1,6 @@
 import gql from "graphql-tag";
-import * as ReactApollo from "react-apollo";
 import * as React from "react";
+import * as ReactApollo from "react-apollo";
 import * as ReactApolloHooks from "react-apollo-hooks";
 export type Maybe<T> = T | null;
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
@@ -197,6 +197,28 @@ export type QueryDancesArgs = {
   _cursor?: Maybe<Scalars["String"]>;
 };
 
+export type VideosByFigureQueryVariables = {
+  figureId: Scalars["ID"];
+  size?: Maybe<Scalars["Int"]>;
+};
+
+export type VideosByFigureQuery = { __typename?: "Query" } & {
+  findFigureByID: Maybe<
+    { __typename?: "Figure" } & {
+      videos: { __typename?: "FigureVideoPage" } & {
+        data: Array<
+          Maybe<
+            { __typename?: "FigureVideo" } & Pick<
+              FigureVideo,
+              "youtubeId" | "start" | "end"
+            >
+          >
+        >;
+      };
+    }
+  >;
+};
+
 export type AddDanceMutationVariables = {
   name: Scalars["String"];
   ballroom: Scalars["Boolean"];
@@ -253,6 +275,68 @@ export type DancesAndFiguresQuery = { __typename?: "Query" } & {
   };
 };
 
+export const VideosByFigureDocument = gql`
+  query VideosByFigure($figureId: ID!, $size: Int = 4) {
+    findFigureByID(id: $figureId) {
+      videos(_size: $size) {
+        data {
+          youtubeId
+          start
+          end
+        }
+      }
+    }
+  }
+`;
+export type VideosByFigureComponentProps = Omit<
+  ReactApollo.QueryProps<VideosByFigureQuery, VideosByFigureQueryVariables>,
+  "query"
+> &
+  ({ variables: VideosByFigureQueryVariables; skip?: false } | { skip: true });
+
+export const VideosByFigureComponent = (
+  props: VideosByFigureComponentProps
+) => (
+  <ReactApollo.Query<VideosByFigureQuery, VideosByFigureQueryVariables>
+    query={VideosByFigureDocument}
+    {...props}
+  />
+);
+
+export type VideosByFigureProps<TChildProps = {}> = Partial<
+  ReactApollo.DataProps<VideosByFigureQuery, VideosByFigureQueryVariables>
+> &
+  TChildProps;
+export function withVideosByFigure<TProps, TChildProps = {}>(
+  operationOptions?: ReactApollo.OperationOption<
+    TProps,
+    VideosByFigureQuery,
+    VideosByFigureQueryVariables,
+    VideosByFigureProps<TChildProps>
+  >
+) {
+  return ReactApollo.withQuery<
+    TProps,
+    VideosByFigureQuery,
+    VideosByFigureQueryVariables,
+    VideosByFigureProps<TChildProps>
+  >(VideosByFigureDocument, {
+    alias: "withVideosByFigure",
+    ...operationOptions
+  });
+}
+
+export function useVideosByFigureQuery(
+  baseOptions?: ReactApolloHooks.QueryHookOptions<VideosByFigureQueryVariables>
+) {
+  return ReactApolloHooks.useQuery<
+    VideosByFigureQuery,
+    VideosByFigureQueryVariables
+  >(VideosByFigureDocument, baseOptions);
+}
+export type VideosByFigureQueryHookResult = ReturnType<
+  typeof useVideosByFigureQuery
+>;
 export const AddDanceDocument = gql`
   mutation AddDance($name: String!, $ballroom: Boolean!, $latin: Boolean!) {
     createDance(data: { name: $name, ballroom: $ballroom, latin: $latin }) {

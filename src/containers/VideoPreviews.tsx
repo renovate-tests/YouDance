@@ -1,5 +1,7 @@
 import * as React from "react";
 import "./VideoPreviews.css";
+import { useVideosByFigureQuery } from "../generated/graphql";
+import { CircularProgress } from "@material-ui/core";
 
 interface VideoPreviewsProps {
   dance: string;
@@ -22,37 +24,47 @@ function FigureView(figure: FigureVideo) {
   return <iframe className="figureView" src={getEmbeddedVideoUrl(figure)} />;
 }
 
-export default function VideoPreviews({ dance, figure }: VideoPreviewsProps) {
-  if (dance === "" || figure === "") {
-    return null;
+function EmptyListView() {
+  return (
+    <section className="videoPreviewsContainer">
+      <h3>We don't have any videos for this figure :/</h3>
+    </section>
+  );
+}
+
+export default function VideoPreviews({ figure }: VideoPreviewsProps) {
+  const { data, loading } = useVideosByFigureQuery({
+    variables: { figureId: figure }
+  });
+
+  if (loading) {
+    return <CircularProgress />;
   }
 
-  const figureVideos: FigureVideo[] = [
-    {
-      youtubeId: "f2a-3WfkFu4",
-      start: 48,
-      end: 55
-    },
-    {
-      youtubeId: "dUYCShksaUI",
-      start: 20,
-      end: 28
-    },
-    {
-      youtubeId: "kMr0EQQF8EE",
-      start: 66,
-      end: 89
-    }
-  ];
+  if (!data || !data.findFigureByID) {
+    return <EmptyListView />;
+  }
+
+  const videos = data.findFigureByID.videos.data || [];
+  const filteredVideos = videos.filter(video => video !== null);
+
+  if (!filteredVideos.length) {
+    return <EmptyListView />;
+  }
+
   function getUniqueId({ youtubeId, start, end }: FigureVideo): string {
     return `${youtubeId}:${start}:${end}`;
   }
 
   return (
     <section className="videoPreviewsContainer">
-      {figureVideos.slice(0, 3).map(figureVideo => (
-        <FigureView key={getUniqueId(figureVideo)} {...figureVideo} />
-      ))}
+      {filteredVideos.map(figureVideo => {
+        if (!figureVideo) {
+          return null;
+        }
+
+        return <FigureView key={getUniqueId(figureVideo)} {...figureVideo} />;
+      })}
     </section>
   );
 }

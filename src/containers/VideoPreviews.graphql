@@ -1,0 +1,11 @@
+query VideosByFigure($figureId: ID!, $size: Int = 4) {
+  findFigureByID(id: $figureId) {
+    videos(_size: $size) {
+      data {
+        youtubeId
+        start
+        end
+      }
+    }
+  }
+}
