@@ -1,0 +1,23 @@
+type FigureVideo {
+  youtubeId: String!
+  start: Int!
+  end: Int!
+  figure: Figure
+}
+
+type Dance {
+  name: String!
+  ballroom: Boolean!
+  latin: Boolean!
+  figures: [Figure] @relation
+}
+
+type Figure {
+  name: String!
+  videos: [FigureVideo] @relation
+  dance: Dance
+}
+
+type Query {
+  dances: [Dance]
+}

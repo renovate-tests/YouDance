@@ -44,11 +44,14 @@ export default function VideoPreviews({ dance, figure }: VideoPreviewsProps) {
       end: 89
     }
   ];
+  function getUniqueId({ youtubeId, start, end }: FigureVideo): string {
+    return `${youtubeId}:${start}:${end}`;
+  }
 
   return (
     <section className="videoPreviewsContainer">
       {figureVideos.slice(0, 3).map(figureVideo => (
-        <FigureView {...figureVideo} />
+        <FigureView key={getUniqueId(figureVideo)} {...figureVideo} />
       ))}
     </section>
   );

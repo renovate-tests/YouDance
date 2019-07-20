@@ -1,0 +1,226 @@
+directive @embedded on OBJECT
+directive @collection(name: String!) on OBJECT
+directive @index(name: String!) on FIELD
+directive @resolver(name: String, paginated: Boolean! = false) on FIELD
+directive @relation(name: String) on FIELD
+directive @unique(index: String) on FIELD
+type Dance {
+  name: String!
+  ballroom: Boolean!
+  # The document's ID.
+  _id: ID!
+  figures(
+    # The number of items to return per page.
+    _size: Int
+    # The pagination cursor.
+    _cursor: String
+  ): FigurePage!
+  latin: Boolean!
+  # The document's timestamp.
+  _ts: Long!
+}
+
+# Allow manipulating the relationship between the types 'Dance' and 'Figure'.
+input DanceFiguresRelation {
+  # Create one or more documents of type 'Figure' and associate them with the current document.
+  create: [FigureInput]
+  # Connect one or more documents of type 'Figure' with the current document using their IDs.
+  connect: [ID]
+  # Disconnect the given documents of type 'Figure' from the current document using their IDs.
+  disconnect: [ID]
+}
+
+# 'Dance' input values
+input DanceInput {
+  name: String!
+  ballroom: Boolean!
+  latin: Boolean!
+  figures: DanceFiguresRelation
+}
+
+# The pagination object for elements of type 'Dance'.
+type DancePage {
+  # The elements of type 'Dance' in this page.
+  data: [Dance]!
+  # A cursor for elements coming after the current page.
+  after: String
+  # A cursor for elements coming before the current page.
+  before: String
+}
+
+scalar Date
+
+type Figure {
+  name: String!
+  # The document's ID.
+  _id: ID!
+  dance: Dance
+  videos(
+    # The number of items to return per page.
+    _size: Int
+    # The pagination cursor.
+    _cursor: String
+  ): FigureVideoPage!
+  # The document's timestamp.
+  _ts: Long!
+}
+
+# Allow manipulating the relationship between the types 'Figure' and 'Dance' using the field 'Figure.dance'.
+input FigureDanceRelation {
+  # Create a document of type 'Dance' and associate it with the current document.
+  create: DanceInput
+  # Connect a document of type 'Dance' with the current document using its ID.
+  connect: ID
+  # If true, disconnects this document from 'Dance'
+  disconnect: Boolean
+}
+
+# 'Figure' input values
+input FigureInput {
+  name: String!
+  videos: FigureVideosRelation
+  dance: FigureDanceRelation
+}
+
+# The pagination object for elements of type 'Figure'.
+type FigurePage {
+  # The elements of type 'Figure' in this page.
+  data: [Figure]!
+  # A cursor for elements coming after the current page.
+  after: String
+  # A cursor for elements coming before the current page.
+  before: String
+}
+
+type FigureVideo {
+  # The document's ID.
+  _id: ID!
+  end: Int!
+  youtubeId: String!
+  figure: Figure
+  start: Int!
+  # The document's timestamp.
+  _ts: Long!
+}
+
+# Allow manipulating the relationship between the types 'FigureVideo' and 'Figure' using the field 'FigureVideo.figure'.
+input FigureVideoFigureRelation {
+  # Create a document of type 'Figure' and associate it with the current document.
+  create: FigureInput
+  # Connect a document of type 'Figure' with the current document using its ID.
+  connect: ID
+  # If true, disconnects this document from 'Figure'
+  disconnect: Boolean
+}
+
+# 'FigureVideo' input values
+input FigureVideoInput {
+  youtubeId: String!
+  start: Int!
+  end: Int!
+  figure: FigureVideoFigureRelation
+}
+
+# The pagination object for elements of type 'FigureVideo'.
+type FigureVideoPage {
+  # The elements of type 'FigureVideo' in this page.
+  data: [FigureVideo]!
+  # A cursor for elements coming after the current page.
+  after: String
+  # A cursor for elements coming before the current page.
+  before: String
+}
+
+# Allow manipulating the relationship between the types 'Figure' and 'FigureVideo'.
+input FigureVideosRelation {
+  # Create one or more documents of type 'FigureVideo' and associate them with the current document.
+  create: [FigureVideoInput]
+  # Connect one or more documents of type 'FigureVideo' with the current document using their IDs.
+  connect: [ID]
+  # Disconnect the given documents of type 'FigureVideo' from the current document using their IDs.
+  disconnect: [ID]
+}
+
+# The `Long` scalar type represents non-fractional signed whole numeric values.
+# Long can represent values between -(2^63) and 2^63 - 1.
+scalar Long
+
+type Mutation {
+  # Update an existing document in the collection of 'Dance'
+  updateDance(
+    # The 'Dance' document's ID
+    id: ID!
+    # 'Dance' input values
+    data: DanceInput!
+  ): Dance
+  # Delete an existing document in the collection of 'Figure'
+  deleteFigure(
+    # The 'Figure' document's ID
+    id: ID!
+  ): Figure
+  # Create a new document in the collection of 'FigureVideo'
+  createFigureVideo(
+    # 'FigureVideo' input values
+    data: FigureVideoInput!
+  ): FigureVideo!
+  # Create a new document in the collection of 'Dance'
+  createDance(
+    # 'Dance' input values
+    data: DanceInput!
+  ): Dance!
+  # Create a new document in the collection of 'Figure'
+  createFigure(
+    # 'Figure' input values
+    data: FigureInput!
+  ): Figure!
+  # Delete an existing document in the collection of 'Dance'
+  deleteDance(
+    # The 'Dance' document's ID
+    id: ID!
+  ): Dance
+  # Update an existing document in the collection of 'FigureVideo'
+  updateFigureVideo(
+    # The 'FigureVideo' document's ID
+    id: ID!
+    # 'FigureVideo' input values
+    data: FigureVideoInput!
+  ): FigureVideo
+  # Delete an existing document in the collection of 'FigureVideo'
+  deleteFigureVideo(
+    # The 'FigureVideo' document's ID
+    id: ID!
+  ): FigureVideo
+  # Update an existing document in the collection of 'Figure'
+  updateFigure(
+    # The 'Figure' document's ID
+    id: ID!
+    # 'Figure' input values
+    data: FigureInput!
+  ): Figure
+}
+
+type Query {
+  # Find a document from the collection of 'FigureVideo' by its id.
+  findFigureVideoByID(
+    # The 'FigureVideo' document's ID
+    id: ID!
+  ): FigureVideo
+  # Find a document from the collection of 'Figure' by its id.
+  findFigureByID(
+    # The 'Figure' document's ID
+    id: ID!
+  ): Figure
+  # Find a document from the collection of 'Dance' by its id.
+  findDanceByID(
+    # The 'Dance' document's ID
+    id: ID!
+  ): Dance
+  dances(
+    # The number of items to return per page.
+    _size: Int
+    # The pagination cursor.
+    _cursor: String
+  ): DancePage!
+}
+
+scalar Time

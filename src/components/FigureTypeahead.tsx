@@ -2,13 +2,15 @@ import * as React from "react";
 import Typeahead from "./Typehead";
 
 interface FigureTypeaheadProps {
+  suggestions: string[];
   setDance(dance: string): void;
   setFigure(figure: string): void;
 }
 
 export default function FigureTypeahead({
   setDance,
-  setFigure
+  setFigure,
+  suggestions
 }: FigureTypeaheadProps) {
   function onSelect(selectedItem: string) {
     const [figure, dance] = selectedItem.split(" in ");
@@ -19,12 +21,7 @@ export default function FigureTypeahead({
     <Typeahead
       placeholder="Search for a figure"
       label="Figure"
-      suggestions={[
-        "Natural Turn in Waltz",
-        "Reverse Turn in Waltz",
-        "Fallaway in Waltz",
-        "Fallaway in Tango"
-      ]}
+      suggestions={suggestions}
       onSelect={onSelect}
     />
   );

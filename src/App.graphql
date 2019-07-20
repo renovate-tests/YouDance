@@ -1,0 +1,12 @@
+query DancesAndFigures {
+  dances {
+    data {
+      name
+      figures {
+        data {
+          name
+        }
+      }
+    }
+  }
+}

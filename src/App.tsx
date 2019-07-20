@@ -6,6 +6,10 @@ import FigureTypeahead from "./components/FigureTypeahead";
 import VideoPreviews from "./containers/VideoPreviews";
 
 import "./App.css";
+import {
+  useDancesAndFiguresQuery,
+  DancesAndFiguresQuery
+} from "./generated/graphql";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -13,20 +17,51 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function FigureSearch() {
+interface FigureSearchProps {
+  suggestions: string[];
+}
+
+function FigureSearch({ suggestions }: FigureSearchProps) {
   const classes = useStyles();
   const [dance, setDance] = React.useState<string>("");
   const [figure, setFigure] = React.useState<string>("");
 
   return (
     <Paper className={classes.root}>
-      <FigureTypeahead setDance={setDance} setFigure={setFigure} />
+      <FigureTypeahead
+        suggestions={suggestions}
+        setDance={setDance}
+        setFigure={setFigure}
+      />
       <VideoPreviews dance={dance} figure={figure} />
     </Paper>
   );
 }
 
+function getSuggestions(data: DancesAndFiguresQuery): string[] {
+  if (!data.dances) {
+    return [];
+  }
+
+  return (data.dances.data || []).reduce((suggestions: string[], dance) => {
+    if (!dance) {
+      return suggestions;
+    }
+
+    const danceName = dance.name;
+
+    return [
+      ...suggestions,
+      ...dance.figures.data
+        .filter(figure => figure !== null)
+        .map(figure => (figure ? `${figure.name} in ${danceName}` : ""))
+    ];
+  }, []);
+}
+
 function App() {
+  const { data } = useDancesAndFiguresQuery();
+
   return (
     <div className="App">
       <header className="App-header">
@@ -34,7 +69,7 @@ function App() {
       </header>
       <Container maxWidth="lg">
         <Box m={4}>
-          <FigureSearch />
+          <FigureSearch suggestions={data ? getSuggestions(data) : []} />
         </Box>
       </Container>
     </div>
