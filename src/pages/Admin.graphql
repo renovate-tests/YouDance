@@ -1,0 +1,6 @@
+mutation AddDance($name: String!, $ballroom: Boolean!, $latin: Boolean!) {
+  createDance(data: { name: $name, ballroom: $ballroom, latin: $latin }) {
+    _id
+    name
+  }
+}

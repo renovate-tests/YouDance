@@ -1,6 +1,6 @@
 import gql from "graphql-tag";
-import * as React from "react";
 import * as ReactApollo from "react-apollo";
+import * as React from "react";
 import * as ReactApolloHooks from "react-apollo-hooks";
 export type Maybe<T> = T | null;
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
@@ -197,6 +197,16 @@ export type QueryDancesArgs = {
   _cursor?: Maybe<Scalars["String"]>;
 };
 
+export type AddDanceMutationVariables = {
+  name: Scalars["String"];
+  ballroom: Scalars["Boolean"];
+  latin: Scalars["Boolean"];
+};
+
+export type AddDanceMutation = { __typename?: "Mutation" } & {
+  createDance: { __typename?: "Dance" } & Pick<Dance, "_id" | "name">;
+};
+
 export type DancesAndFiguresQueryVariables = {};
 
 export type DancesAndFiguresQuery = { __typename?: "Query" } & {
@@ -215,6 +225,65 @@ export type DancesAndFiguresQuery = { __typename?: "Query" } & {
   };
 };
 
+export const AddDanceDocument = gql`
+  mutation AddDance($name: String!, $ballroom: Boolean!, $latin: Boolean!) {
+    createDance(data: { name: $name, ballroom: $ballroom, latin: $latin }) {
+      _id
+      name
+    }
+  }
+`;
+export type AddDanceMutationFn = ReactApollo.MutationFn<
+  AddDanceMutation,
+  AddDanceMutationVariables
+>;
+export type AddDanceComponentProps = Omit<
+  ReactApollo.MutationProps<AddDanceMutation, AddDanceMutationVariables>,
+  "mutation"
+>;
+
+export const AddDanceComponent = (props: AddDanceComponentProps) => (
+  <ReactApollo.Mutation<AddDanceMutation, AddDanceMutationVariables>
+    mutation={AddDanceDocument}
+    {...props}
+  />
+);
+
+export type AddDanceProps<TChildProps = {}> = Partial<
+  ReactApollo.MutateProps<AddDanceMutation, AddDanceMutationVariables>
+> &
+  TChildProps;
+export function withAddDance<TProps, TChildProps = {}>(
+  operationOptions?: ReactApollo.OperationOption<
+    TProps,
+    AddDanceMutation,
+    AddDanceMutationVariables,
+    AddDanceProps<TChildProps>
+  >
+) {
+  return ReactApollo.withMutation<
+    TProps,
+    AddDanceMutation,
+    AddDanceMutationVariables,
+    AddDanceProps<TChildProps>
+  >(AddDanceDocument, {
+    alias: "withAddDance",
+    ...operationOptions
+  });
+}
+
+export function useAddDanceMutation(
+  baseOptions?: ReactApolloHooks.MutationHookOptions<
+    AddDanceMutation,
+    AddDanceMutationVariables
+  >
+) {
+  return ReactApolloHooks.useMutation<
+    AddDanceMutation,
+    AddDanceMutationVariables
+  >(AddDanceDocument, baseOptions);
+}
+export type AddDanceMutationHookResult = ReturnType<typeof useAddDanceMutation>;
 export const DancesAndFiguresDocument = gql`
   query DancesAndFigures {
     dances {
