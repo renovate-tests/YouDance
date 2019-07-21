@@ -181,8 +181,9 @@ interface YoutubeVideoResponse {
 }
 
 async function getYoutubeVideos(danceName: string) {
+  const apiKey = process.env.REACT_APP_YOUTUBE_API_TOKEN;
   const searchTerm = encodeURIComponent(`wdsf ${danceName}`);
-  const apiKey = "AIzaSyCkD0MSqi0g9ZYCqk3C9QXXNJ0Ykdoh354";
+
   return fetch(
     `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&q=${searchTerm}&key=${apiKey}`
   ).then(res => res.json());
