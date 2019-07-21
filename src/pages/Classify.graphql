@@ -2,5 +2,16 @@ query FindDance($id: ID!) {
   findDanceByID(id: $id) {
     name
     _id
+    figures {
+      data {
+        _id
+        name
+        videos {
+          data {
+            youtubeId
+          }
+        }
+      }
+    }
   }
 }

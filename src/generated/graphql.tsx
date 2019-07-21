@@ -262,7 +262,28 @@ export type FindDanceQueryVariables = {
 };
 
 export type FindDanceQuery = { __typename?: "Query" } & {
-  findDanceByID: Maybe<{ __typename?: "Dance" } & Pick<Dance, "name" | "_id">>;
+  findDanceByID: Maybe<
+    { __typename?: "Dance" } & Pick<Dance, "name" | "_id"> & {
+        figures: { __typename?: "FigurePage" } & {
+          data: Array<
+            Maybe<
+              { __typename?: "Figure" } & Pick<Figure, "_id" | "name"> & {
+                  videos: { __typename?: "FigureVideoPage" } & {
+                    data: Array<
+                      Maybe<
+                        { __typename?: "FigureVideo" } & Pick<
+                          FigureVideo,
+                          "youtubeId"
+                        >
+                      >
+                    >;
+                  };
+                }
+            >
+          >;
+        };
+      }
+  >;
 };
 
 export type DancesAndFiguresQueryVariables = {};
@@ -271,10 +292,7 @@ export type DancesAndFiguresQuery = { __typename?: "Query" } & {
   dances: { __typename?: "DancePage" } & {
     data: Array<
       Maybe<
-        { __typename?: "Dance" } & Pick<
-          Dance,
-          "_id" | "name" | "ballroom" | "latin"
-        > & {
+        { __typename?: "Dance" } & Pick<Dance, "_id" | "name"> & {
             figures: { __typename?: "FigurePage" } & {
               data: Array<
                 Maybe<
@@ -619,6 +637,17 @@ export const FindDanceDocument = gql`
     findDanceByID(id: $id) {
       name
       _id
+      figures {
+        data {
+          _id
+          name
+          videos {
+            data {
+              youtubeId
+            }
+          }
+        }
+      }
     }
   }
 `;
@@ -673,8 +702,6 @@ export const DancesAndFiguresDocument = gql`
       data {
         _id
         name
-        ballroom
-        latin
         figures {
           data {
             _id

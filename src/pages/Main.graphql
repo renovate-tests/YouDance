@@ -3,8 +3,7 @@ query DancesAndFigures {
     data {
       _id
       name
-      ballroom
-      latin
+
       figures {
         data {
           _id

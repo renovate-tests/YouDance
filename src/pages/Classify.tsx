@@ -10,7 +10,8 @@ import {
   useFindDanceQuery,
   useAddFigureMutation,
   useAddFigureVideoMutation,
-  useDancesAndFiguresQuery
+  useDancesAndFiguresQuery,
+  FindDanceQuery
 } from "../generated/graphql";
 
 import "./Classify.css";
@@ -151,49 +152,67 @@ function AddFigureForm({
   );
 }
 
-async function getYoutubeVideoId(danceName: string) {
+interface YoutubeVideoResponse {
+  id: {
+    videoId: string;
+  };
+}
+
+async function getYoutubeVideos(danceName: string) {
   const searchTerm = encodeURIComponent(`wdsf ${danceName}`);
   const apiKey = "AIzaSyCkD0MSqi0g9ZYCqk3C9QXXNJ0Ykdoh354";
   return fetch(
-    `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${searchTerm}&key=${apiKey}`
-  )
-    .then(res => res.json())
-    .then(response => {
-      if (
-        response &&
-        response.items &&
-        response.items[0] &&
-        response.items[0].id &&
-        response.items[0].id.videoId
-      ) {
-        return response.items[0].id.videoId;
-      } else {
-        return null;
-      }
-    });
+    `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&q=${searchTerm}&key=${apiKey}`
+  ).then(res => res.json());
 }
 
 interface VideoClassificationProps {
   danceName: string;
   danceId: string;
+  knownYoutubeIds: string[] | null;
 }
 
-function VideoClassification({ danceName, danceId }: VideoClassificationProps) {
+function VideoClassification({
+  danceName,
+  danceId,
+  knownYoutubeIds
+}: VideoClassificationProps) {
   const { data, loading } = useDancesAndFiguresQuery();
-  const [youtubeId, setYoutubId] = React.useState();
+  const [youtubeResponse, setYoutubeResponse] = React.useState();
   // Search video on youtube
 
   React.useEffect(() => {
-    getYoutubeVideoId(danceName).then(result => setYoutubId(result));
-  });
+    getYoutubeVideos(danceName).then(result => setYoutubeResponse(result));
+  }, []);
 
-  if (!youtubeId || loading || !data) {
+  if (!youtubeResponse || loading || !data || !knownYoutubeIds) {
     return <CircularProgress />;
   }
+
   // TODO: only load what we need
   const figures = getUniqueFigures(data).filter(
     item => item.danceId === danceId
   );
+
+  let youtubeId = null;
+  if (youtubeResponse && youtubeResponse.items) {
+    const youtubeIds = youtubeResponse.items.map(
+      (item: YoutubeVideoResponse) => item.id.videoId
+    );
+    const filteredIds = youtubeIds.filter((item: string) => {
+      return !knownYoutubeIds.includes(item);
+    });
+
+    if (filteredIds.length) {
+      youtubeId = filteredIds[0];
+    } else {
+      youtubeId = youtubeIds[0];
+    }
+  }
+
+  if (!youtubeId) {
+    return null;
+  }
 
   return (
     <>
@@ -210,11 +229,39 @@ function VideoClassification({ danceName, danceId }: VideoClassificationProps) {
   );
 }
 
+type DanceType = FindDanceQuery["findDanceByID"];
+function getYoutubeIds(dance: DanceType): string[] {
+  if (!dance) {
+    return [];
+  }
+
+  return (dance.figures.data || [])
+    .reduce(
+      (carry, figure) => {
+        if (!figure) {
+          return carry;
+        }
+
+        const youtubeIds = (figure.videos.data || []).map(video =>
+          video ? video.youtubeId : ""
+        );
+
+        return [...carry, ...youtubeIds];
+      },
+      [] as string[]
+    )
+    .filter(youtubeId => youtubeId !== "");
+}
+
 interface ClassifyProps {
   match: match<{ id: string }>;
 }
 // TODO: if no id is present we should request a dance from the backend
 export default function Classify({ match }: ClassifyProps) {
+  const [knownYoutubeIds, setYoutubeIds] = React.useState<null | string[]>(
+    null
+  );
+
   const id = match.params.id;
   // Load dance from ID (we need this for the search)
   const { data, loading } = useFindDanceQuery({
@@ -225,12 +272,20 @@ export default function Classify({ match }: ClassifyProps) {
     return <CircularProgress />;
   }
 
-  const danceName = data.findDanceByID.name;
+  const dance = data.findDanceByID;
+
+  if (knownYoutubeIds === null) {
+    setYoutubeIds(getYoutubeIds(data.findDanceByID));
+  }
 
   return (
     <Box m={4}>
-      <h1>Help us get new videos for {danceName}</h1>
-      <VideoClassification danceId={id} danceName={danceName} />
+      <h1>Help us get new videos for {dance.name}</h1>
+      <VideoClassification
+        danceId={id}
+        danceName={dance.name}
+        knownYoutubeIds={knownYoutubeIds}
+      />
     </Box>
   );
 }
