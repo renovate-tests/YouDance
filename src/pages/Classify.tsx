@@ -183,7 +183,7 @@ function VideoClassification({
 
   React.useEffect(() => {
     getYoutubeVideos(danceName).then(result => setYoutubeResponse(result));
-  }, []);
+  }, [danceName]);
 
   if (!youtubeResponse || loading || !data || !knownYoutubeIds) {
     return <CircularProgress />;
