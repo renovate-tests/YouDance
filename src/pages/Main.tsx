@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Paper, Box } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import { Link } from "react-router-dom";
 
 import FigureTypeahead from "../components/FigureTypeahead";
 import VideoPreviews from "../containers/VideoPreviews";
@@ -84,6 +85,7 @@ function Main() {
   return (
     <Box m={4}>
       <FigureSearch suggestions={data ? getUniqueFigures(data) : []} />
+      <Link to="/classify/238439201418248709">Help us get more figures</Link>
     </Box>
   );
 }

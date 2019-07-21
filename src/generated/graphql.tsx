@@ -257,6 +257,14 @@ export type AddFigureVideoMutation = { __typename?: "Mutation" } & {
   createFigureVideo: { __typename?: "FigureVideo" } & Pick<FigureVideo, "_id">;
 };
 
+export type FindDanceQueryVariables = {
+  id: Scalars["ID"];
+};
+
+export type FindDanceQuery = { __typename?: "Query" } & {
+  findDanceByID: Maybe<{ __typename?: "Dance" } & Pick<Dance, "name" | "_id">>;
+};
+
 export type DancesAndFiguresQueryVariables = {};
 
 export type DancesAndFiguresQuery = { __typename?: "Query" } & {
@@ -590,6 +598,59 @@ export function useAddFigureVideoMutation(
 export type AddFigureVideoMutationHookResult = ReturnType<
   typeof useAddFigureVideoMutation
 >;
+export const FindDanceDocument = gql`
+  query FindDance($id: ID!) {
+    findDanceByID(id: $id) {
+      name
+      _id
+    }
+  }
+`;
+export type FindDanceComponentProps = Omit<
+  ReactApollo.QueryProps<FindDanceQuery, FindDanceQueryVariables>,
+  "query"
+> &
+  ({ variables: FindDanceQueryVariables; skip?: false } | { skip: true });
+
+export const FindDanceComponent = (props: FindDanceComponentProps) => (
+  <ReactApollo.Query<FindDanceQuery, FindDanceQueryVariables>
+    query={FindDanceDocument}
+    {...props}
+  />
+);
+
+export type FindDanceProps<TChildProps = {}> = Partial<
+  ReactApollo.DataProps<FindDanceQuery, FindDanceQueryVariables>
+> &
+  TChildProps;
+export function withFindDance<TProps, TChildProps = {}>(
+  operationOptions?: ReactApollo.OperationOption<
+    TProps,
+    FindDanceQuery,
+    FindDanceQueryVariables,
+    FindDanceProps<TChildProps>
+  >
+) {
+  return ReactApollo.withQuery<
+    TProps,
+    FindDanceQuery,
+    FindDanceQueryVariables,
+    FindDanceProps<TChildProps>
+  >(FindDanceDocument, {
+    alias: "withFindDance",
+    ...operationOptions
+  });
+}
+
+export function useFindDanceQuery(
+  baseOptions?: ReactApolloHooks.QueryHookOptions<FindDanceQueryVariables>
+) {
+  return ReactApolloHooks.useQuery<FindDanceQuery, FindDanceQueryVariables>(
+    FindDanceDocument,
+    baseOptions
+  );
+}
+export type FindDanceQueryHookResult = ReturnType<typeof useFindDanceQuery>;
 export const DancesAndFiguresDocument = gql`
   query DancesAndFigures {
     dances {

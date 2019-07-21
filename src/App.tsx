@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route } from "react-router-dom";
 import { Container } from "@material-ui/core";
 import Main from "./pages/Main";
 import Admin from "./pages/Admin";
+import Classify from "./pages/Classify";
 
 import "./App.css";
 
@@ -17,6 +18,7 @@ export default function App() {
         <Container maxWidth="lg">
           <Route path="/" exact component={Main} />
           <Route path="/admin" exact component={Admin} />
+          <Route path="/classify/:id" component={Classify} />
         </Container>
       </div>
     </Router>

@@ -1,0 +1,6 @@
+query FindDance($id: ID!) {
+  findDanceByID(id: $id) {
+    name
+    _id
+  }
+}
