@@ -13,7 +13,11 @@
   font-size: calc(20px);
   color: white;
 }
+.App-header a {
+  text-decoration: none;
+  cursor: pointer;
+}
 
-.App-link {
-  color: #61dafb;
+.App-title {
+  color: #fff;
 }

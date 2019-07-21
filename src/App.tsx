@@ -1,5 +1,5 @@
 import * as React from "react";
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import { Container } from "@material-ui/core";
 import Main from "./pages/Main";
 import Admin from "./pages/Admin";
@@ -12,7 +12,9 @@ export default function App() {
     <Router>
       <div className="App">
         <header className="App-header">
-          <h1 className="App-title">YouDance</h1>
+          <Link to="/">
+            <h1 className="App-title">YouDance</h1>
+          </Link>
         </header>
 
         <Container maxWidth="lg">
