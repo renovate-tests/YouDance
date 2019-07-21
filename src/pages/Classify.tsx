@@ -73,6 +73,10 @@ function AddFigureForm({
           if (!values.end) {
             return { end: "Required" };
           }
+
+          if (values.start >= values.end) {
+            return { start: "Must be smaller than end" };
+          }
         }}
         onSubmit={(values, { setSubmitting, resetForm }) => {
           setSubmitting(true);
