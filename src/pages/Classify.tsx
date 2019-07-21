@@ -9,15 +9,17 @@ import { match } from "react-router";
 import {
   useFindDanceQuery,
   useAddFigureMutation,
-  useAddFigureVideoMutation
+  useAddFigureVideoMutation,
+  useDancesAndFiguresQuery
 } from "../generated/graphql";
 
 import "./Classify.css";
 import { Formik, Form, Field, ErrorMessage } from "formik";
+import { getUniqueFigures } from "./Main";
 
 interface Figure {
-  _id: string;
-  name: string;
+  label: string;
+  figureId: string;
 }
 
 interface AddFigureFormProps {
@@ -93,8 +95,9 @@ function AddFigureForm({
               <option value="" />
               {knownFigures.map(figure => {
                 return (
-                  <option key={figure._id} value={figure._id}>
-                    {figure.name}
+                  <option key={figure.figureId} value={figure.figureId}>
+                    {/* TODO: find a cleaner solution / abstraction for this hack */}
+                    {figure.label.split(" in")[0]}
                   </option>
                 );
               })}
@@ -174,6 +177,7 @@ interface VideoClassificationProps {
 }
 
 function VideoClassification({ danceName, danceId }: VideoClassificationProps) {
+  const { data, loading } = useDancesAndFiguresQuery();
   const [youtubeId, setYoutubId] = React.useState();
   // Search video on youtube
 
@@ -181,9 +185,10 @@ function VideoClassification({ danceName, danceId }: VideoClassificationProps) {
     getYoutubeVideoId(danceName).then(result => setYoutubId(result));
   });
 
-  if (!youtubeId) {
+  if (!youtubeId || loading || !data) {
     return <CircularProgress />;
   }
+  const figures = getUniqueFigures(data);
 
   return (
     <>
@@ -194,7 +199,7 @@ function VideoClassification({ danceName, danceId }: VideoClassificationProps) {
       <AddFigureForm
         danceId={danceId}
         youtubeId={youtubeId}
-        knownFigures={[]}
+        knownFigures={figures}
       />
     </>
   );
