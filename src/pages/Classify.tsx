@@ -93,14 +93,16 @@ function AddFigureForm({
           <Form>
             <Field component="select" name="figureSelection">
               <option value="" />
-              {knownFigures.map(figure => {
-                return (
-                  <option key={figure.figureId} value={figure.figureId}>
-                    {/* TODO: find a cleaner solution / abstraction for this hack */}
-                    {figure.label.split(" in")[0]}
-                  </option>
-                );
-              })}
+              {knownFigures
+                .sort((a, b) => a.label.localeCompare(b.label))
+                .map(figure => {
+                  return (
+                    <option key={figure.figureId} value={figure.figureId}>
+                      {/* TODO: find a cleaner solution / abstraction for this hack */}
+                      {figure.label.split(" in")[0]}
+                    </option>
+                  );
+                })}
               <option value="new-figure">Add new Figure</option>
             </Field>
             <ErrorMessage name="figureSelection" component="div" />
@@ -188,7 +190,10 @@ function VideoClassification({ danceName, danceId }: VideoClassificationProps) {
   if (!youtubeId || loading || !data) {
     return <CircularProgress />;
   }
-  const figures = getUniqueFigures(data);
+  // TODO: only load what we need
+  const figures = getUniqueFigures(data).filter(
+    item => item.danceId === danceId
+  );
 
   return (
     <>
