@@ -6,6 +6,8 @@ import {
   SnackbarContent
 } from "@material-ui/core";
 import { match } from "react-router";
+import ReactPlayer from "react-player";
+
 import {
   useFindDanceQuery,
   useAddFigureMutation,
@@ -18,6 +20,14 @@ import "./Classify.css";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { getUniqueFigures } from "./Main";
 
+interface NowProps {
+  onClick(): void;
+}
+
+function Now({ onClick }: NowProps) {
+  return <button onClick={onClick}>Now</button>;
+}
+
 interface Figure {
   label: string;
   figureId: string;
@@ -27,12 +37,14 @@ interface AddFigureFormProps {
   danceId: string;
   youtubeId: string;
   knownFigures: Figure[];
+  currentPlaybackTime: number;
 }
 
 function AddFigureForm({
   knownFigures,
   danceId,
-  youtubeId
+  youtubeId,
+  currentPlaybackTime
 }: AddFigureFormProps) {
   const [addFigure] = useAddFigureMutation();
   const [addFigureVideo] = useAddFigureVideoMutation();
@@ -117,10 +129,16 @@ function AddFigureForm({
 
             <span>Start (in s)</span>
             <Field type="number" name="start" />
+            <Now
+              onClick={() => form.setFieldValue("start", currentPlaybackTime)}
+            />
             <ErrorMessage name="start" component="div" />
 
             <span>End (in s)</span>
             <Field type="number" name="end" />
+            <Now
+              onClick={() => form.setFieldValue("end", currentPlaybackTime)}
+            />
             <ErrorMessage name="end" component="div" />
 
             <button type="submit" disabled={form.isSubmitting || !form.isValid}>
@@ -177,6 +195,7 @@ function VideoClassification({
   danceId,
   knownYoutubeIds
 }: VideoClassificationProps) {
+  const [playbackTime, setPlaybackTime] = React.useState(0);
   const { data, loading } = useDancesAndFiguresQuery();
   const [youtubeResponse, setYoutubeResponse] = React.useState();
   // Search video on youtube
@@ -216,11 +235,16 @@ function VideoClassification({
 
   return (
     <>
-      <iframe
+      <ReactPlayer
         className="Classify-review"
-        src={"https://www.youtube.com/embed/" + youtubeId}
+        url={"https://www.youtube.com/watch?v=" + youtubeId}
+        onProgress={({ playedSeconds }) =>
+          setPlaybackTime(Math.floor(playedSeconds))
+        }
       />
+
       <AddFigureForm
+        currentPlaybackTime={playbackTime}
         danceId={danceId}
         youtubeId={youtubeId}
         knownFigures={figures}
