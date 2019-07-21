@@ -1,8 +1,10 @@
 {
   "name": "YouDance",
   "version": 2,
-  "env": {
-    "REACT_APP_GRAPHQL_API_URL": "@react_app_graphql_api_url",
-    "REACT_APP_GRAPHQL_API_TOKEN": "@react_app_graphql_api_token"
+  "build": {
+    "env": {
+      "REACT_APP_GRAPHQL_API_URL": "@react_app_graphql_api_url",
+      "REACT_APP_GRAPHQL_API_TOKEN": "@react_app_graphql_api_token"
+    }
   }
 }
