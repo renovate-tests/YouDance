@@ -1,18 +1,15 @@
 import * as React from "react";
-import { Box, CircularProgress } from "@material-ui/core";
-import { match } from "react-router";
+import { Box, CircularProgress, Select, MenuItem } from "@material-ui/core";
 import ReactPlayer from "react-player";
 
 import {
-  useFindDanceQuery,
   useDancesAndFiguresQuery,
-  FindDanceQuery
+  DancesAndFiguresQuery
 } from "../generated/graphql";
 
 import "./Classify.css";
-
-import { getUniqueFigures } from "./Main";
 import AddFigureForm from "../containers/AddFigureForm";
+import { getUniqueFigures } from "./Main";
 
 interface YoutubeVideoResponse {
   id: {
@@ -28,6 +25,8 @@ async function getYoutubeVideos(danceName: string) {
     `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&q=${searchTerm}&key=${apiKey}`
   ).then(res => res.json());
 }
+
+type DanceType = DancesAndFiguresQuery["dances"]["data"][0];
 
 interface VideoClassificationProps {
   danceName: string;
@@ -98,63 +97,119 @@ function VideoClassification({
   );
 }
 
-type DanceType = FindDanceQuery["findDanceByID"];
-function getYoutubeIds(dance: DanceType): string[] {
-  if (!dance) {
+function getYoutubeIds(dances: DanceType[]): string[] {
+  if (!dances) {
     return [];
   }
 
-  return (dance.figures.data || [])
+  return dances
     .reduce(
-      (carry, figure) => {
-        if (!figure) {
+      (carry, dance) => {
+        if (!dance) {
           return carry;
         }
 
-        const youtubeIds = (figure.videos.data || []).map(video =>
-          video ? video.youtubeId : ""
+        const youtubeIdsForDance = (dance.figures.data || []).reduce(
+          (carry, figure) => {
+            if (!figure) {
+              return carry;
+            }
+
+            const youtubeIds = (figure.videos.data || []).map(video =>
+              video ? video.youtubeId : ""
+            );
+
+            return [...carry, ...youtubeIds];
+          },
+          [] as string[]
         );
 
-        return [...carry, ...youtubeIds];
+        return [...carry, ...youtubeIdsForDance];
       },
       [] as string[]
     )
-    .filter(youtubeId => youtubeId !== "");
+    .filter((youtubeId: string) => youtubeId !== "");
 }
 
-interface ClassifyProps {
-  match: match<{ id: string }>;
+function getDanceById(selectedDanceId: string, dances: DanceType[]) {
+  return dances.find(dance => dance && dance._id === selectedDanceId);
 }
-// TODO: if no id is present we should request a dance from the backend
-export default function Classify({ match }: ClassifyProps) {
+
+function getNumberOfVideos(dance: DanceType): number {
+  if (!dance) {
+    return Infinity; // we search for the smallest where this is used
+  }
+
+  return dance.figures.data.reduce((carry, figure) => {
+    if (!figure) {
+      return carry;
+    }
+
+    return carry + (figure.videos.data || []).length;
+  }, 0);
+}
+
+function getDanceWithLeastVideos(data: DancesAndFiguresQuery): DanceType {
+  if (!data.dances) {
+    return null;
+  }
+
+  return (data.dances.data || []).sort((danceA, danceB) =>
+    getNumberOfVideos(danceA) < getNumberOfVideos(danceB) ? -1 : 1
+  )[0];
+}
+
+export default function Classify() {
+  const [selectedDanceId, setSelectedDanceId] = React.useState<string>("");
+  const { data, loading } = useDancesAndFiguresQuery();
+
   const [knownYoutubeIds, setYoutubeIds] = React.useState<null | string[]>(
     null
   );
 
-  const id = match.params.id;
-  // Load dance from ID (we need this for the search)
-  const { data, loading } = useFindDanceQuery({
-    variables: { id }
-  });
-
-  if (loading || !data || !data.findDanceByID) {
+  if (loading || !data || !data.dances || !data.dances.data) {
     return <CircularProgress />;
   }
 
-  const dance = data.findDanceByID;
-
-  if (knownYoutubeIds === null) {
-    setYoutubeIds(getYoutubeIds(data.findDanceByID));
+  // TODO: use effect or sth?
+  if (!knownYoutubeIds) {
+    setYoutubeIds(getYoutubeIds(data.dances.data));
   }
+
+  const dances = data.dances.data;
+  if (!selectedDanceId) {
+    const dance = getDanceWithLeastVideos(data);
+    if (dance) {
+      setSelectedDanceId(dance._id);
+    }
+  }
+  const dance = getDanceById(selectedDanceId, dances);
 
   return (
     <Box m={4}>
-      <h1>Help us get new videos for {dance.name}</h1>
-      <VideoClassification
-        danceId={id}
-        danceName={dance.name}
-        knownYoutubeIds={knownYoutubeIds}
-      />
+      <h1>
+        Help us get new videos for{" "}
+        <Select
+          value={selectedDanceId}
+          onChange={e => setSelectedDanceId(e.target.value as string)}
+        >
+          {dances.map(dance =>
+            dance ? (
+              <MenuItem key={dance._id} value={dance._id}>
+                {dance.name}
+              </MenuItem>
+            ) : null
+          )}
+        </Select>
+      </h1>
+
+      {dance && knownYoutubeIds ? (
+        <VideoClassification
+          danceId={dance._id}
+          danceName={dance.name}
+          knownYoutubeIds={knownYoutubeIds}
+        />
+      ) : null}
     </Box>
   );
 }

@@ -20,7 +20,7 @@ export default function App() {
         <Container maxWidth="lg">
           <Route path="/" exact component={Main} />
           <Route path="/admin" exact component={Admin} />
-          <Route path="/classify/:id" component={Classify} />
+          <Route path="/classify" component={Classify} />
         </Container>
       </div>
     </Router>

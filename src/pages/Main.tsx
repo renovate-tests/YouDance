@@ -79,51 +79,18 @@ export function getUniqueFigures(data: DancesAndFiguresQuery): UniqueFigure[] {
   );
 }
 
-type DanceType = DancesAndFiguresQuery["dances"]["data"][0];
-
-function getNumberOfVideos(dance: DanceType): number {
-  if (!dance) {
-    return Infinity; // we search for the smallest where this is used
-  }
-
-  return dance.figures.data.reduce((carry, figure) => {
-    if (!figure) {
-      return carry;
-    }
-
-    return carry + (figure.videos.data || []).length;
-  }, 0);
-}
-
-function getDanceWithLeastVideos(data: DancesAndFiguresQuery): DanceType {
-  if (!data.dances) {
-    return null;
-  }
-
-  return (data.dances.data || []).sort((danceA, danceB) =>
-    getNumberOfVideos(danceA) < getNumberOfVideos(danceB) ? -1 : 1
-  )[0];
-}
-
 function Main() {
   const { data } = useDancesAndFiguresQuery();
-
-  let leastClassifiedDance: DanceType | null = null;
-
-  if (data) {
-    leastClassifiedDance = getDanceWithLeastVideos(data);
-  }
 
   return (
     <Box m={4}>
       <FigureSearch suggestions={data ? getUniqueFigures(data) : []} />
-      {leastClassifiedDance ? (
-        <Box m={4}>
-          <Link to={"/classify/" + leastClassifiedDance._id}>
-            <Button variant="contained">Help us get more figures</Button>
-          </Link>
-        </Box>
-      ) : null}
+
+      <Box m={4}>
+        <Link to="/classify">
+          <Button variant="contained">Help us get more figures</Button>
+        </Link>
+      </Box>
     </Box>
   );
 }
