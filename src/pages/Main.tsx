@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Paper, Box } from "@material-ui/core";
+import { Paper, Box, Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { Link } from "react-router-dom";
 
@@ -118,9 +118,11 @@ function Main() {
     <Box m={4}>
       <FigureSearch suggestions={data ? getUniqueFigures(data) : []} />
       {leastClassifiedDance ? (
-        <Link to={"/classify/" + leastClassifiedDance._id}>
-          Help us get more figures
-        </Link>
+        <Box m={4}>
+          <Link to={"/classify/" + leastClassifiedDance._id}>
+            <Button variant="contained">Help us get more figures</Button>
+          </Link>
+        </Box>
       ) : null}
     </Box>
   );
