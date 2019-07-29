@@ -102,6 +102,7 @@ function VideoClassification({
           youtubeId={youtubeId}
           knownFigures={figures}
         />
+
         <Button onClick={() => setYoutubeIndex(youtubeIndex + 1)}>
           Next Video
         </Button>
