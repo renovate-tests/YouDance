@@ -1,5 +1,11 @@
 import * as React from "react";
-import { Box, CircularProgress, Select, MenuItem } from "@material-ui/core";
+import {
+  Box,
+  CircularProgress,
+  Select,
+  MenuItem,
+  Button
+} from "@material-ui/core";
 import ReactPlayer from "react-player";
 
 import {
@@ -42,8 +48,9 @@ function VideoClassification({
   const [playbackTime, setPlaybackTime] = React.useState(0);
   const { data, loading } = useDancesAndFiguresQuery();
   const [youtubeResponse, setYoutubeResponse] = React.useState();
-  // Search video on youtube
+  const [youtubeIndex, setYoutubeIndex] = React.useState(0);
 
+  // Search video on youtube
   React.useEffect(() => {
     getYoutubeVideos(danceName).then(result => setYoutubeResponse(result));
   }, [danceName]);
@@ -67,9 +74,9 @@ function VideoClassification({
     });
 
     if (filteredIds.length) {
-      youtubeId = filteredIds[0];
+      youtubeId = filteredIds[youtubeIndex];
     } else {
-      youtubeId = youtubeIds[0];
+      youtubeId = youtubeIds[youtubeIndex];
     }
   }
 
@@ -94,6 +101,9 @@ function VideoClassification({
           youtubeId={youtubeId}
           knownFigures={figures}
         />
+        <Button onClick={() => setYoutubeIndex(youtubeIndex + 1)}>
+          Next Video
+        </Button>
       </Box>
     </>
   );
