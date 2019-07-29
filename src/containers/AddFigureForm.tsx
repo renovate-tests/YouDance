@@ -1,18 +1,39 @@
 import * as React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import { CircularProgress, Snackbar, SnackbarContent } from "@material-ui/core";
+import {
+  CircularProgress,
+  Snackbar,
+  SnackbarContent,
+  MenuItem,
+  FormGroup,
+  Box,
+  Button
+} from "@material-ui/core";
+import { TextField, Select } from "formik-material-ui";
 
 import {
   useAddFigureMutation,
   useAddFigureVideoMutation
 } from "../generated/graphql";
 
+import "./AddFigureForm.css";
+
 interface NowProps {
   onClick(): void;
+  className: string;
 }
 
-function Now({ onClick }: NowProps) {
-  return <button onClick={onClick}>Now</button>;
+function Now({ onClick, className }: NowProps) {
+  return (
+    <Button
+      component="a"
+      variant="contained"
+      className={className}
+      onClick={onClick}
+    >
+      Now
+    </Button>
+  );
 }
 
 interface Figure {
@@ -95,48 +116,75 @@ export default function AddFigureForm({
       >
         {form => (
           <Form>
-            <Field component="select" name="figureSelection">
-              <option value="" />
-              {knownFigures
-                .sort((a, b) => a.label.localeCompare(b.label))
-                .map(figure => {
-                  return (
-                    <option key={figure.figureId} value={figure.figureId}>
-                      {/* TODO: find a cleaner solution / abstraction for this hack */}
-                      {figure.label.split(" in")[0]}
-                    </option>
-                  );
-                })}
-              <option value="new-figure">Add new Figure</option>
-            </Field>
-            <ErrorMessage name="figureSelection" component="div" />
+            <FormGroup className="Add-Figure-Form">
+              <Box m={4}>
+                <FormGroup row>
+                  <span className="Label-Spacing">Figure</span>
+                  <Field component={Select} name="figureSelection">
+                    <MenuItem value="" />
+                    {knownFigures
+                      .sort((a, b) => a.label.localeCompare(b.label))
+                      .map(figure => {
+                        return (
+                          <MenuItem
+                            key={figure.figureId}
+                            value={figure.figureId}
+                          >
+                            {/* TODO: find a cleaner solution / abstraction for this hack */}
+                            {figure.label.split(" in")[0]}
+                          </MenuItem>
+                        );
+                      })}
+                    <MenuItem value="new-figure">Add new Figure</MenuItem>
+                  </Field>
+                  <ErrorMessage name="figureSelection" component="div" />
+                  {form.values.figureSelection === "new-figure" ? (
+                    <div className="New-Figure">
+                      <Field component={TextField} name="newFigure" />
+                    </div>
+                  ) : null}
+                </FormGroup>
+              </Box>
 
-            {form.values.figureSelection === "new-figure" ? (
-              <>
-                <Field name="newFigure" />
-                <ErrorMessage name="newFigure" component="div" />
-              </>
-            ) : null}
+              <Box m={4}>
+                <FormGroup row>
+                  <span className="Label-Spacing">Start (in s)</span>
+                  <Field component={TextField} type="number" name="start" />
+                  <Now
+                    className="Now-Spacing"
+                    onClick={() =>
+                      form.setFieldValue("start", currentPlaybackTime)
+                    }
+                  />
+                  <ErrorMessage name="start" component="div" />
+                </FormGroup>
+              </Box>
 
-            <span>Start (in s)</span>
-            <Field type="number" name="start" />
-            <Now
-              onClick={() => form.setFieldValue("start", currentPlaybackTime)}
-            />
-            <ErrorMessage name="start" component="div" />
+              <Box m={4}>
+                <FormGroup row>
+                  <span className="Label-Spacing">End (in s)</span>
+                  <Field component={TextField} type="number" name="end" />
+                  <Now
+                    className="Now-Spacing"
+                    onClick={() =>
+                      form.setFieldValue("end", currentPlaybackTime)
+                    }
+                  />
+                  <ErrorMessage name="end" component="div" />
+                </FormGroup>
+              </Box>
 
-            <span>End (in s)</span>
-            <Field type="number" name="end" />
-            <Now
-              onClick={() => form.setFieldValue("end", currentPlaybackTime)}
-            />
-            <ErrorMessage name="end" component="div" />
+              <Button
+                variant="contained"
+                color="primary"
+                type="submit"
+                disabled={form.isSubmitting || !form.isValid}
+              >
+                Add Figure
+              </Button>
 
-            <button type="submit" disabled={form.isSubmitting || !form.isValid}>
-              Add Figure
-            </button>
-
-            {form.isSubmitting ? <CircularProgress /> : null}
+              {form.isSubmitting ? <CircularProgress /> : null}
+            </FormGroup>
           </Form>
         )}
       </Formik>

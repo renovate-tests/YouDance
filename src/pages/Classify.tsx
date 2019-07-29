@@ -87,12 +87,14 @@ function VideoClassification({
         }
       />
 
-      <AddFigureForm
-        currentPlaybackTime={playbackTime}
-        danceId={danceId}
-        youtubeId={youtubeId}
-        knownFigures={figures}
-      />
+      <Box m={4}>
+        <AddFigureForm
+          currentPlaybackTime={playbackTime}
+          danceId={danceId}
+          youtubeId={youtubeId}
+          knownFigures={figures}
+        />
+      </Box>
     </>
   );
 }

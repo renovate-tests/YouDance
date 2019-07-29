@@ -1,0 +1,16 @@
+.Add-Figure-Form {
+  margin: 0 auto;
+  width: 500px;
+}
+
+.New-Figure {
+  margin-left: 1em;
+}
+
+.Label-Spacing {
+  margin-right: 1em;
+}
+
+.Now-Spacing {
+  margin-left: 1em !important;
+}
