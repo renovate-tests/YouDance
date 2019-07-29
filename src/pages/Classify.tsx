@@ -87,6 +87,7 @@ function VideoClassification({
   return (
     <>
       <ReactPlayer
+        controls
         className="Classify-review"
         url={"https://www.youtube.com/watch?v=" + youtubeId}
         onProgress={({ playedSeconds }) =>
