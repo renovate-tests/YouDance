@@ -25,8 +25,6 @@ export default function FigureView(video: FigureVideo) {
     <ReactPlayer
       ref={playerRef}
       onEnded={() => {
-        console.log("Ended", playerRef);
-
         if (playerRef && playerRef.current) {
           const player = playerRef.current as ReactPlayer;
           player.seekTo(video.start, "seconds");
