@@ -1,4 +1,4 @@
-import { getEmbeddedVideoUrl } from "../VideoPreviews";
+import { getEmbeddedVideoUrl } from "../FigureView";
 
 describe("getEmbeddedVideoUrl", () => {
   it("construts a url using the id and start", () => {
