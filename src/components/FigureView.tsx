@@ -1,4 +1,5 @@
 import * as React from "react";
+import ReactPlayer from "react-player";
 
 export interface FigureVideo {
   youtubeId: string;
@@ -17,11 +18,24 @@ export function getEmbeddedVideoUrl(video: FigureVideo): string {
 }
 
 export default function FigureView(video: FigureVideo) {
+  const playerRef = React.useRef<ReactPlayer | null>(null);
+
   return (
-    <iframe
-      title={getUniqueId(video)}
+    <ReactPlayer
+      ref={playerRef}
+      onEnded={() => {
+        console.log("Ended", playerRef);
+
+        if (playerRef && playerRef.current) {
+          const player = playerRef.current as ReactPlayer;
+          player.seekTo(video.start, "seconds");
+
+          const youtubePlayer = player.getInternalPlayer();
+          (youtubePlayer as any).playVideo();
+        }
+      }}
       className="figureView"
-      src={getEmbeddedVideoUrl(video)}
+      url={getEmbeddedVideoUrl(video)}
     />
   );
 }
