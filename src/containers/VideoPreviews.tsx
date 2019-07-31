@@ -2,36 +2,11 @@ import * as React from "react";
 import "./VideoPreviews.css";
 import { useVideosByFigureQuery } from "../generated/graphql";
 import { CircularProgress } from "@material-ui/core";
+import FigureView, { getUniqueId } from "../components/FigureView";
 
 interface VideoPreviewsProps {
   dance: string;
   figure: string;
-}
-
-interface FigureVideo {
-  youtubeId: string;
-  start: number; // in seconds
-  end: number; // in seconds
-}
-
-function getUniqueId({ youtubeId, start, end }: FigureVideo): string {
-  return `${youtubeId}:${start}:${end}`;
-}
-
-export function getEmbeddedVideoUrl(video: FigureVideo): string {
-  return `https://www.youtube.com/embed/${video.youtubeId}?start=${
-    video.start
-  }&end=${video.end}&version=3`;
-}
-
-function FigureView(video: FigureVideo) {
-  return (
-    <iframe
-      title={getUniqueId(video)}
-      className="figureView"
-      src={getEmbeddedVideoUrl(video)}
-    />
-  );
 }
 
 function EmptyListView() {
