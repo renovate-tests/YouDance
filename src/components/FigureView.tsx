@@ -12,9 +12,10 @@ export function getUniqueId({ youtubeId, start, end }: FigureVideo): string {
 }
 
 export function getEmbeddedVideoUrl(video: FigureVideo): string {
+  // Adds two seconds before and after
   return `https://www.youtube.com/embed/${video.youtubeId}?start=${
-    video.start
-  }&end=${video.end}&version=3`;
+    video.start <= 2 ? 0 : video.start - 2
+  }&end=${video.end + 2}&version=3`;
 }
 
 export default function FigureView(video: FigureVideo) {
