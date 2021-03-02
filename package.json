@@ -15,7 +15,7 @@
     "apollo-boost": "^0.4.3",
     "downshift": "^3.2.10",
     "formik": "^1.5.8",
-    "formik-material-ui": "0.0.20",
+    "formik-material-ui": "3.0.1",
     "graphql": "^14.4.2",
     "graphql-tag": "^2.10.1",
     "react": "^16.8.6",
