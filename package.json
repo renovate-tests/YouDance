@@ -13,7 +13,7 @@
     "@types/react-dom": "^16.8.4",
     "@types/react-router-dom": "^4.3.4",
     "apollo-boost": "^0.4.3",
-    "downshift": "^3.2.10",
+    "downshift": "3.4.8",
     "formik": "^1.5.8",
     "formik-material-ui": "0.0.20",
     "graphql": "^14.4.2",
